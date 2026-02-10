@@ -7,10 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
-      // Polyfill para evitar "ReferenceError: process is not defined" caso alguma lib acesse diretamente
-      window.process = { env: {} };
-    </script>
-    <script>
+      // Configuração do Tailwind
       tailwind.config = {
         theme: {
           extend: {
