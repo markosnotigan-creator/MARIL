@@ -26,7 +26,8 @@ import {
   ArrowUpDown,
   CalendarCheck,
   CheckSquare,
-  ListPlus
+  ListPlus,
+  MonitorDown
 } from 'lucide-react';
 import { StorageService } from './services/storageService';
 import { GeminiService } from './services/geminiService';
@@ -50,6 +51,30 @@ const LoginScreen = ({ onLogin }: { onLogin: (isAdmin: boolean) => void }) => {
   const [showAdminInput, setShowAdminInput] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      // Impede o mini-infobar padrão do navegador
+      e.preventDefault();
+      // Armazena o evento para ser acionado depois
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Usuário aceitou a instalação');
+        }
+        setInstallPrompt(null);
+      });
+    }
+  };
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +102,15 @@ const LoginScreen = ({ onLogin }: { onLogin: (isAdmin: boolean) => void }) => {
             <Button fullWidth variant="secondary" onClick={() => onLogin(false)}>
               Acessar Consulta Pública
             </Button>
+            
+            {installPrompt && (
+              <div className="pt-4 border-t border-gray-100 mt-4">
+                 <Button fullWidth variant="ghost" onClick={handleInstallClick} className="text-police-700 bg-police-50 border border-police-100 hover:bg-police-100">
+                   <MonitorDown size={18} className="mr-2" /> Instalar App no Computador
+                 </Button>
+                 <p className="text-[10px] text-gray-400 mt-2">Instale para acesso rápido na área de trabalho</p>
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleAdminLogin} className="space-y-4 animate-fade-in text-left">
